@@ -9,20 +9,20 @@ namespace Lab_PAOIiAS_1
         {
             //регистры
             int EAX = 0, EBX = 0, ECX = 0, EDX = 0;
-            
+
             //value
             int value;
             // счетчик команд, команд операций
-            int PC = 0, OpCode;
+            int PC, OpCode;
 
             //массив чисел для сложения
             int[] numbers = new int[] { 5, 3, 1, 6, 10 };
             int expectedResult = 0;
-            for (int i=0; i < numbers.Length; i++)
+            for (int i = 0; i < numbers.Length; i++)
             {
                 expectedResult += numbers[i];
             }
-            Console.WriteLine("Expected result : {0}",expectedResult);
+            Console.WriteLine("Expected result : {0}", expectedResult);
             //оперативная память
             int[] cmem = new int[14];
             cmem[0] = 0x10000009;//load 1 num to Eax 
@@ -42,14 +42,90 @@ namespace Lab_PAOIiAS_1
             cmem[13] = 0x0000000A; // 5 num
 
 
-            for (PC = 0; PC < cmem.Length; PC++)
+            bool inputFlag = true;
+
+            while (inputFlag)
             {
-                if (((cmem[PC]>>24) & 255) != 0 )
+                Console.WriteLine("Enter the command:");
+                string cmd = Console.ReadLine();
+                string[] arrayCmd = cmd.Split(' ');
+                if (arrayCmd[0] == "stop")
                 {
+                    inputFlag = false;
+                }
+                else
+                {
+                    string sCmdType = "";
+                    string sOp1 = "";
+                    string sOp2 = "";
+                    int cmdType = 0;
+                    int op1 = 0;
+                    int op2 = 0;
+                    int resultCMD = 0;
+
+                    if (arrayCmd[0] == "Load")
+                    {
+                        if (arrayCmd[1] == "EAX")
+                        {
+                            sCmdType = "0x10";
+                            cmdType = 268435456;// 2^28
+                        }
+                        if (arrayCmd[1] == "EBX")
+                        {
+                            sCmdType = "0x11";
+                            cmdType = 268435456 + 16777216;// 2^28 + 2^24
+                        }
+                        if (arrayCmd[1] == "ECX")
+                        {
+                            sCmdType = "0x12";
+                            cmdType = 268435456 + 16777216;// 2^28 + 2^25
+                        }
+                        if (arrayCmd[1] == "EDX")
+                        {
+                            sCmdType = "0x13";
+                            cmdType = 268435456 + 33554432 + 16777216;// 2^28 + 2^25 + 2^24
+                        }
+                        sOp1 = "000";
+                        sOp2 = arrayCmd[2];
+                        op1 = Convert.ToInt32(sOp1);
+                        op2 = Convert.ToInt32(sOp2);
+
+                        Array.Resize<int>(ref cmem, cmem.Length + 2);
+
+                        cmem[cmem.Length - 2] = op2;
+                        resultCMD = cmdType + op1 + cmem.Length - 2;
+                        cmem[cmem.Length - 1] = resultCMD;
+
+                    }
+                    if (arrayCmd[0] == "Add")
+                    {
+                        sCmdType = "0x20";
+                        cmdType = 536870912;// 2^29
+                        sOp1 = arrayCmd[1];
+                        sOp2 = arrayCmd[2];
+                        op1 = StrToIntOp1(sOp1);
+                        op2 = StrToIntOp2(sOp2);
+                        resultCMD = cmdType + op1 + op2;
+
+                        Array.Resize<int>(ref cmem, cmem.Length + 1);
+
+                        cmem[cmem.Length - 1] = resultCMD;
+                    }
+
+                }
+            }
+
+            int countForLab3 = 0;
+            for (int i = 0; i < cmem.Length; i++)
+            {
+
+                if (((cmem[i] >> 24) & 255) != 0)
+                {
+                    PC = i - countForLab3;
                     Console.WriteLine("PC: {0}", PC);
-                    OpCode = DecodeOpCode(cmem[PC]);
+                    OpCode = DecodeOpCode(cmem[i]);
                     Console.WriteLine("OpCode: 0x{0:X}", OpCode);
-                    value = cmem[cmem[PC] & 4095];
+                    value = cmem[cmem[i] & 4095];
                     //команды 
                     switch (OpCode)
                     {
@@ -75,8 +151,8 @@ namespace Lab_PAOIiAS_1
                             break;
                         case 0x20:
                             // add two registers
-                            int regNumber1 = DefineReg1(cmem[PC]);// номер регистра1
-                            int regNumber2 = DefineReg2(cmem[PC]);// номер регистра2
+                            int regNumber1 = DefineReg1(cmem[i]);// номер регистра1
+                            int regNumber2 = DefineReg2(cmem[i]);// номер регистра2
                             // sum of register values
                             int sumResult = Add(GetRegisterValue(regNumber1, EAX, EBX, ECX, EDX),
                                                  GetRegisterValue(regNumber2, EAX, EBX, ECX, EDX));
@@ -91,13 +167,14 @@ namespace Lab_PAOIiAS_1
                             ShowRegisterValues(EAX, EBX, ECX, EDX);
                             break;
                     }
-                } 
+                }
+                else
+                    countForLab3++;
             }
-            Console.WriteLine("Hex Result: 0x{0:X8}", EAX);
-            Console.WriteLine("Int Result: {0}", EAX & 4095);
+
             if ((EAX & 4095) == expectedResult)
                 Console.WriteLine("Register value equals the expected result");
-            
+            Console.WriteLine("add command hex - 0x{0:X8}", cmem[cmem.Length - 1]);
         }
 
         // define number of reg1
@@ -163,6 +240,50 @@ namespace Lab_PAOIiAS_1
             Console.WriteLine("       register EBX: 0x{0:X8}", EBX);
             Console.WriteLine("       register ECX: 0x{0:X8}", ECX);
             Console.WriteLine("       register EDX: 0x{0:X8}", EDX);
+        }
+
+        //input op1 string to int
+        static int StrToIntOp1(string sOp1)
+        {
+            int op1 = 0;
+            switch (sOp1)
+            {
+                case "EAX":
+                    op1 = 4096; //2^12
+                    break;
+                case "EBX":
+                    op1 = 8192; //2^13
+                    break;
+                case "ECX":
+                    op1 = 8192 + 4096; //2^13 +2^12
+                    break;
+                case "EDX":
+                    op1 = 16384; //2^14
+                    break;
+            }
+            return op1;
+        }
+        //input op2 string to int
+        static int StrToIntOp2(string sOp2)
+        {
+            int op2 = 0;
+
+            switch (sOp2)
+            {
+                case "EAX":
+                    op2 = 1; //2^0
+                    break;
+                case "EBX":
+                    op2 = 2; //2^1
+                    break;
+                case "ECX":
+                    op2 = 3; //2^1 + 2^0
+                    break;
+                case "EDX":
+                    op2 = 4; //2^2
+                    break;
+            }
+            return op2;
         }
     }
 }

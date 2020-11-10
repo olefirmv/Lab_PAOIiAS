@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab_PAOIiAS", "Lab_PAOIiAS\Lab_PAOIiAS.csproj", "{79029052-68A4-4621-80A6-5802F6F3B87D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lab_PAOIiAS_1", "Lab_PAOIiAS\Lab_PAOIiAS_1.csproj", "{79029052-68A4-4621-80A6-5802F6F3B87D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab_PAOIiAS__3", "Lab_PAOIiAS__3\Lab_PAOIiAS__3.csproj", "{F14D0FBB-3B9F-4D4C-9A24-FA74BE03FD53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab_PAOIiAS_2", "Lab_PAOIiAS_2\Lab_PAOIiAS_2.csproj", "{207E031E-9099-42EF-8273-00613846746B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{79029052-68A4-4621-80A6-5802F6F3B87D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79029052-68A4-4621-80A6-5802F6F3B87D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79029052-68A4-4621-80A6-5802F6F3B87D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F14D0FBB-3B9F-4D4C-9A24-FA74BE03FD53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F14D0FBB-3B9F-4D4C-9A24-FA74BE03FD53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F14D0FBB-3B9F-4D4C-9A24-FA74BE03FD53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F14D0FBB-3B9F-4D4C-9A24-FA74BE03FD53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{207E031E-9099-42EF-8273-00613846746B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{207E031E-9099-42EF-8273-00613846746B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{207E031E-9099-42EF-8273-00613846746B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{207E031E-9099-42EF-8273-00613846746B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
