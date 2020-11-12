@@ -25,7 +25,7 @@ namespace Lab_PAOIiAS_1
             Console.WriteLine("Expected result : {0}",expectedResult);
             //оперативная память
             int[] cmem = new int[14];
-            cmem[0] = 0x10000009;//load 1 num to Eax 
+            cmem[0] = 0x10000009;//load 1 num to EAX 
             cmem[1] = 0x1100000A;//load 2 num to EBX
             cmem[2] = 0x1200000B;//load 3 num to ECX
             cmem[3] = 0x1300000C;//load 4 num to EDX

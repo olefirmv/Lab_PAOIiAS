@@ -78,7 +78,7 @@ namespace Lab_PAOIiAS_1
                         if (arrayCmd[1] == "ECX")
                         {
                             sCmdType = "0x12";
-                            cmdType = 268435456 + 16777216;// 2^28 + 2^25
+                            cmdType = 268435456 + 33554432;// 2^28 + 2^25
                         }
                         if (arrayCmd[1] == "EDX")
                         {
@@ -235,7 +235,7 @@ namespace Lab_PAOIiAS_1
         static void ShowRegisterValues(int EAX, int EBX,
             int ECX, int EDX)
         {
-            //string sEAX = String.Format();
+            
             Console.WriteLine("       register EAX: 0x{0:X8}", EAX);
             Console.WriteLine("       register EBX: 0x{0:X8}", EBX);
             Console.WriteLine("       register ECX: 0x{0:X8}", ECX);
