@@ -65,6 +65,7 @@ namespace Lab_PAOIiAS_1
 
                     if (arrayCmd[0] == "Load")
                     {
+                        sCmdType = "0x10";
                         if (arrayCmd[1] == "EAX")
                         {
                             sCmdType = "0x10";
@@ -189,6 +190,29 @@ namespace Lab_PAOIiAS_1
 
             return commandNumber & 4095;
 
+        }
+        static int GetRegisterValue(int regNum, int reg1, int reg2,
+            int reg3, int reg4)
+        {
+            int registerValue = 0;
+
+            switch (regNum)
+            {
+                case 1:
+                    registerValue = reg1;
+                    break;
+                case 2:
+                    registerValue = reg2;
+                    break;
+                case 3:
+                    registerValue = reg3;
+                    break;
+                case 4:
+                    registerValue = reg4;
+                    break;
+            }
+
+            return registerValue;
         }
         // add registers values
         static int Add(int reg1, int reg2)

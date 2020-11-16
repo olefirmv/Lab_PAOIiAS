@@ -76,8 +76,8 @@ namespace Lab_PAOIiAS_1_new
                 }
 
                 ShowRegisterValues();
+                Console.WriteLine("       CF:{0}", CF);
                 PC++;
-
             }
             
             
@@ -178,7 +178,7 @@ namespace Lab_PAOIiAS_1_new
         {
             Console.WriteLine("PC:{0}", PC);
             Console.WriteLine("       OpCode: 0x{0:X}", OpCode);
-            Console.WriteLine("       CF:{0}", CF);
+            
         }
        
     }

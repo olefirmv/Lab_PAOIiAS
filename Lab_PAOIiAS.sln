@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lab_PAOIiAS_1_new", "Lab_PA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab_PAOIiAS_2_new", "Lab_PAOIiAS_2_new\Lab_PAOIiAS_2_new.csproj", "{912B9F74-C7D6-4077-8FF5-511A8B582207}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab_PAOIiAS_new", "Lab_PAOIiAS_new\Lab_PAOIiAS_new.csproj", "{F24E6859-70EB-4DFC-BD89-CE7CFD2A70AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab_PAOIiAS_3_new", "Lab_PAOIiAS_new\Lab_PAOIiAS_3_new.csproj", "{F24E6859-70EB-4DFC-BD89-CE7CFD2A70AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

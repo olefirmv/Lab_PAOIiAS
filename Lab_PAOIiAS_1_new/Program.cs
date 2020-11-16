@@ -23,7 +23,8 @@ namespace Lab_PAOIiAS_1_new
 
             int tmpValue = cmem.Length;
             
-            while (ECX != cmem.Length)
+
+            while (ECX != tmpValue)
             {
                 
                 OpCode = DecodeOpCode(cmem[PC]);
