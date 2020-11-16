@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Security.Cryptography;
 
 namespace Lab_PAOIiAS_1
 {
@@ -9,111 +9,67 @@ namespace Lab_PAOIiAS_1
         {
             //регистры
             int EAX = 0, EBX = 0, ECX = 0, EDX = 0;
-
+            //flag
+            int CF = 0;
             //value
             int value;
             // счетчик команд, команд операций
             int PC, OpCode;
 
             //массив чисел для сложения
-            int[] numbers = new int[] { 5, 3, 1, 6, 10 };
-            int expectedResult = 0;
-            for (int i = 0; i < numbers.Length; i++)
+            //int[] numbers = new int[] { 5, 3, 1, 6, 10 };
+            int[] a = new int[5] { 9456431, 9456434, 532, 44, 9456434 };
+            int[] b = new int[5] { 4531, 4531, 822, 19, 51022 };
+            long expectedResult = 0;
+
+            for (int i = 0; i < a.Length; i++)
             {
-                expectedResult += numbers[i];
+                expectedResult = expectedResult + a[i]* b[i];
             }
             Console.WriteLine("Expected result : {0}", expectedResult);
             //оперативная память
-            int[] cmem = new int[14];
-            cmem[0] = 0x10000009;//load 1 num to Eax 
-            cmem[1] = 0x1100000A;//load 2 num to EBX
-            cmem[2] = 0x1200000B;//load 3 num to ECX
-            cmem[3] = 0x1300000C;//load 4 num to EDX
-            cmem[4] = 0x20001002;//add EAX, EBX
-            cmem[5] = 0x20003004;//add ECX, EDX
-            cmem[6] = 0x20001003;//add EAX, ECX
-            cmem[7] = 0x1100000D;//load 5 num to EBX
-            cmem[8] = 0x20001002;//add EAX, EBX
+            int[] cmem = new int[30];
+            cmem[0] = 0x10000014;//load a1 num to EAX 
+            cmem[1] = 0x11000019;//load b1 num to EBX
+            cmem[2] = 0x30000002;//MUL EBX
 
-            cmem[9] = 0x00000005; // 1 num
-            cmem[10] = 0x00000003; // 2 num
-            cmem[11] = 0x00000001; // 3 num
-            cmem[12] = 0x00000006; // 4 num
-            cmem[13] = 0x0000000A; // 5 num
+            cmem[3] = 0x11000015;//load a2 num to EBX
+            cmem[4] = 0x1200001A;//load b2 num to ECX
+            cmem[5] = 0x20000003;//MUL ECX
+
+            cmem[7] = 0x40000000;//add EAX, EBX 
+
+            cmem[8] = 0x11000016;//load a3 num to EBX
+            cmem[9] = 0x1200001B;//load b3 num to ECX
+            cmem[10] = 0x20000003;//MUL ECX
+
+            cmem[11] = 0x40000000;//add EAX, EBX 
+
+            cmem[12] = 0x11000017;//load a4 num to EBX
+            cmem[13] = 0x1200001C;//load b4 num to ECX
+            cmem[14] = 0x20000003;//MUL ECX
+
+            cmem[15] = 0x40000000;//add EAX, EBX 
+
+            cmem[16] = 0x11000018;//load a5 num to EBX
+            cmem[17] = 0x1200001D;//load b5 num to ECX
+            cmem[18] = 0x20000003;//MUL ECX
+
+            cmem[19] = 0x40000000;//add EAX, EBX 
+
+            cmem[20] = 9456431; // 1 num a1
+            cmem[21] = 9456434; // 2 num a2
+            cmem[22] = 532; // 3 num a3
+            cmem[23] = 44; // 4 num a4
+            cmem[24] = 9456434; // 5 num a5
+
+            cmem[25] = 4531; // 1 num  b1
+            cmem[26] = 4531; // 2 num  b2
+            cmem[27] = 822; // 3 num  b3
+            cmem[28] = 19; // 4 num  b4
+            cmem[29] = 51022; // 5 num  b5
 
 
-            bool inputFlag = true;
-
-            while (inputFlag)
-            {
-                Console.WriteLine("Enter the command:");
-                string cmd = Console.ReadLine();
-                string[] arrayCmd = cmd.Split(' ');
-                if (arrayCmd[0] == "stop")
-                {
-                    inputFlag = false;
-                }
-                else
-                {
-                    string sCmdType = "";
-                    string sOp1 = "";
-                    string sOp2 = "";
-                    int cmdType = 0;
-                    int op1 = 0;
-                    int op2 = 0;
-                    int resultCMD = 0;
-
-                    if (arrayCmd[0] == "Load")
-                    {
-                        if (arrayCmd[1] == "EAX")
-                        {
-                            sCmdType = "0x10";
-                            cmdType = 268435456;// 2^28
-                        }
-                        if (arrayCmd[1] == "EBX")
-                        {
-                            sCmdType = "0x11";
-                            cmdType = 268435456 + 16777216;// 2^28 + 2^24
-                        }
-                        if (arrayCmd[1] == "ECX")
-                        {
-                            sCmdType = "0x12";
-                            cmdType = 268435456 + 16777216;// 2^28 + 2^25
-                        }
-                        if (arrayCmd[1] == "EDX")
-                        {
-                            sCmdType = "0x13";
-                            cmdType = 268435456 + 33554432 + 16777216;// 2^28 + 2^25 + 2^24
-                        }
-                        sOp1 = "000";
-                        sOp2 = arrayCmd[2];
-                        op1 = Convert.ToInt32(sOp1);
-                        op2 = Convert.ToInt32(sOp2);
-
-                        Array.Resize<int>(ref cmem, cmem.Length + 2);
-
-                        cmem[cmem.Length - 2] = op2;
-                        resultCMD = cmdType + op1 + cmem.Length - 2;
-                        cmem[cmem.Length - 1] = resultCMD;
-
-                    }
-                    if (arrayCmd[0] == "Add")
-                    {
-                        sCmdType = "0x20";
-                        cmdType = 536870912;// 2^29
-                        sOp1 = arrayCmd[1];
-                        sOp2 = arrayCmd[2];
-                        op1 = StrToIntOp1(sOp1);
-                        op2 = StrToIntOp2(sOp2);
-                        resultCMD = cmdType + op1 + op2;
-
-                        Array.Resize<int>(ref cmem, cmem.Length + 1);
-
-                        cmem[cmem.Length - 1] = resultCMD;
-                    }
-
-                }
-            }
 
             int countForLab3 = 0;
             for (int i = 0; i < cmem.Length; i++)
@@ -166,6 +122,53 @@ namespace Lab_PAOIiAS_1
                                 EDX = sumResult;
                             ShowRegisterValues(EAX, EBX, ECX, EDX);
                             break;
+                        case 0x30:
+                            //mul ebx
+                            long mulValue;
+                            long sumValue;
+                            if ((cmem[i] &4095) == 2)
+                            {
+                                if ((long) EAX * EBX > int.MaxValue)
+                                {
+                                    mulValue = EAX * EBX;
+                                    EDX = (int) (mulValue - int.MaxValue);
+                                    EAX = (int) (mulValue & int.MaxValue);
+                                    
+                                }
+                                else EAX *= EBX;
+                            }
+                            //mul ecx
+                            if ((cmem[i] & 4095) == 3)
+                            {
+                                if ((long)EBX * ECX > int.MaxValue)
+                                {
+                                    mulValue = EBX * ECX;
+                                    ECX = (int)(mulValue - int.MaxValue);
+                                    EBX = (int)(mulValue & int.MaxValue);
+
+                                }
+                                else EBX *= ECX;
+                            }
+                            ShowRegisterValues(EAX, EBX, ECX, EDX);
+                            break;
+                        case 0x40:
+                            if ((long)(EAX + EBX) > int.MaxValue)
+                            {
+                                sumValue = (long) EAX + EBX;
+                                EAX = (int) sumValue * int.MaxValue;
+                                CF = 1;
+                                ADC(ref EDX, ref ECX, CF);
+                            }
+                            else
+                            {
+                                EAX = Add(EAX, EBX);
+                                EDX = Add(EDX, ECX);
+                            }
+                                
+                            ShowRegisterValues(EAX, EBX, ECX, EDX);
+                            ShowFlags(CF);
+                            ResetFlags(CF);
+                            break;
                     }
                 }
                 else
@@ -173,15 +176,26 @@ namespace Lab_PAOIiAS_1
 
 
             }
-            Console.WriteLine("Hex Result: 0x{0:X8}", EAX);
-            Console.WriteLine("Int Result: {0}", EAX & 4095);
-            if ((EAX & 4095) == expectedResult)
-                Console.WriteLine("Register value equals the expected result");
-            Console.WriteLine("add command hex - 0x{0:X8}", cmem[cmem.Length - 1]);
+            Console.WriteLine("Hex Result: 0x{0:X8}", EDX);
+            Console.WriteLine("Hex EAX Result: 0x{0:X8}", EAX);
+            Console.WriteLine("expcted result: {0:X16}", expectedResult);
+            
         }
 
+        static void ADC (ref int reg1, ref int reg2, int CF)
+        {
+            reg1 = reg1 + reg2 + CF;
+        }
 
+        static void ResetFlags(int CF)
+        {
+            CF = 0;
+        }
 
+        static void ShowFlags(int CF)
+        {
+            Console.WriteLine("       CF: {0}", CF);
+        }
 
         // define number of reg1
         static int DefineReg1(int commandNumber)
