@@ -54,13 +54,13 @@ namespace Lab_PAOIiAS_3_new
             
             bool tmpFlag = true;
             
-            foreach (int i in cmem)
+            for(int i = 0; i < cmem.Length; i++ )
             {
-                if(((i>>24) & 255) == 30 || ((i >> 24) & 255) == 31)
+                if(((cmem[i] >> 24) & 255) == 0x30 || ((cmem[i] >> 24) & 255) == 0x31)
                 {
                     tmpFlag = false;
                 }
-                Console.WriteLine(": 0x{0:X8}",i);
+                Console.WriteLine(": 0x{0:X8}",cmem[i]);
             }
 
             if (tmpFlag == false)
