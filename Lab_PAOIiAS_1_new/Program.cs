@@ -5,58 +5,91 @@ namespace Lab_PAOIiAS_1_new
 {
     class Program
     {
-        static int EAX = 0, EBX = 0, ECX = 0, EDX = 0;
+        static int EAX = 0 /*001*/, EBX = 0/*002*/, ECX = 0/*003*/, EDX = 0/*004*/;
         static int PC = 0;
         static int OpCode;
+        static int resultCMD;
+        static string tmpCmem;
+        static int tmpValue;
+        static int regNumber1;
+        static int regNumber2;
+        static int movResult;
+        static int incResult;
+        static int loadResult;
+        static int index;
+
         static int[] cmem;
+        static int[] arrNumbers;
+        static int[] arrCMDS;
 
         static void Main(string[] args)
         {
+            foreach (uint i in cmem)
+            {
+                cmem[i] = 0;
+            }
             ArrInit();
             //cmds
             cmem[0] = 0x10003007; // load 1st index in cmem to ECX
             cmem[1] = 0x30000000;// L1
             cmem[2] = 0x11001003;// mov EAX cmem[ECX]
             cmem[3] = 0x20004001;// add two registers
-            cmem[4] = 0x21003001;// Inc ECX 1
+            cmem[4] = 0x22003001;// Inc ECX 1
             cmem[5] = 0x31000000;// loop
 
-            int tmpValue = cmem.Length;
+            int tmpValue = 6;
             
 
-            while (ECX != tmpValue)
+            while (PC != tmpValue)
             {
-                
                 OpCode = DecodeOpCode(cmem[PC]);
-                ShowPC(PC);
-                           
+                ShowPC(PC);        
                 switch (OpCode)
                 {
                     case 0x10:
                         // load
-                        Load(ref ECX, 7);
+                        regNumber1 = DefineReg1(cmem[PC]);
+                        int value = DefineReg2(cmem[PC]);
+                        loadResult = Load(GetRegisterValue(regNumber1), value);
+                        setResultToReg1(regNumber1, loadResult);
                         break;
                     case 0x30:
                         //L1
                         Console.WriteLine("L1");
+                        index = PC - 1;
                         break;
                     case 0x11:
                         // mov
-                        Mov(ref EAX, cmem[ECX]);
+                        regNumber1 = DefineReg1(cmem[PC]);
+                        regNumber2 = DefineReg2(cmem[PC]);
+                        movResult = Mov(GetRegisterValue(regNumber1), cmem[GetRegisterValue(regNumber2)]);
+                        setResultToReg1(regNumber1, movResult);
                         break;
                     case 0x20:
                         //add two registers
-                        Add(ref EDX, EAX);
+                        regNumber1 = DefineReg1(cmem[PC]);
+                        regNumber2 = DefineReg2(cmem[PC]);
+                        int sumResult = Add(GetRegisterValue(regNumber1), GetRegisterValue(regNumber2));
+                        setResultToReg1(regNumber1, sumResult);
                         break;
-                    case 0x21:
+                    case 0x22:
                         // Inc
-                        Inc(ref ECX);
+                        regNumber1 = DefineReg1(cmem[PC]);
+                        incResult = Inc(GetRegisterValue(regNumber1));
+                        setResultToReg1(regNumber1, incResult);
                         break;
                     case 0x31:
-                        Console.WriteLine("Loop L1");
                         //loop
-                        PC = 0;
-                        break;
+                        if (ECX == cmem.Length)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Loop L1");
+                            PC = index;
+                            break;
+                        }
                 }
                 ShowRegisterValues(EAX, EBX, ECX, EDX);
                 PC++; 
@@ -82,27 +115,73 @@ namespace Lab_PAOIiAS_1_new
             }
             return cmem;
         }
-
-        static void Add(ref int reg1, int reg2)
+        static void setResultToReg1(int op1, int opResult)
         {
-            reg1 += reg2;
+            if (op1 == 1)
+                EAX = opResult;
+            else if (op1 == 2)
+                EBX = opResult;
+            else if (op1 == 3)
+                ECX = opResult;
+            else if (op1 == 4)
+                EDX = opResult;
         }
-        
-        static void Inc(ref int reg)
+        // define number of reg1
+        static int DefineReg1(int commandNumber)
         {
-            reg++;
+            return (commandNumber >> 12) & 4095;
+
+        }
+        // define number of reg2
+        static int DefineReg2(int commandNumber)
+        {
+
+            return commandNumber & 4095;
+
         }
 
-        static void Mov(ref int reg, int value)
+        static int GetRegisterValue(int regNum)
         {
-            reg = value;
+            int registerValue = 0;
+
+            switch (regNum)
+            {
+                case 1:
+                    registerValue = EAX;
+                    break;
+                case 2:
+                    registerValue = EBX;
+                    break;
+                case 3:
+                    registerValue = ECX;
+                    break;
+                case 4:
+                    registerValue = EDX;
+                    break;
+            }
+
+            return registerValue;
         }
 
-        static void Load (ref int reg, int firstNumberIndex)
+        static int Add(int reg1, int reg2)
         {
-            reg = firstNumberIndex;
+            return reg1 += reg2;
         }
 
+        static int Inc(int reg)
+        {
+            return reg = reg + 1;
+        }
+
+        static int Mov(int reg, int value)
+        {
+            return reg = value;
+        }
+
+        static int Load(int reg, int value)
+        {
+            return reg = value;
+        }
         static int DecodeOpCode(int cmd)
         {
             return cmd >> 24;

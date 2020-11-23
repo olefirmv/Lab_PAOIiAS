@@ -16,6 +16,7 @@ namespace Lab_PAOIiAS_3_new
         static int movResult;
         static int incResult;
         static int loadResult;
+        static int index;
 
         static int[] cmem;
         static int[] arrNumbers;
@@ -94,6 +95,7 @@ namespace Lab_PAOIiAS_3_new
                     case 0x30:
                         //L1
                         Console.WriteLine("L1");
+                        index = PC - 1;
                         break;
                     case 0x11:
                         // mov
@@ -118,7 +120,7 @@ namespace Lab_PAOIiAS_3_new
                     case 0x31:
                         Console.WriteLine("Loop L1");
                         //loop
-                        PC = 0;
+                        PC = index;
                         break;
                 }
                 ShowRegisterValues();

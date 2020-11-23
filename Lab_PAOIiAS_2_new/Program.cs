@@ -10,11 +10,14 @@ namespace Lab_PAOIiAS_1_new
         static uint CF;
         static uint PC = 0;
         static uint OpCode;
-        static uint[] cmem;
+        static uint[] cmem = new uint[200];
 
         static void Main(string[] args)
         {
-            
+            foreach(uint i in cmem)
+            {
+                cmem[i] = 0;
+            }
             ArrInit();
             //cmds
             cmem[0] = 0x1000700B;// load 1st index in cmem to ESI
@@ -30,7 +33,7 @@ namespace Lab_PAOIiAS_1_new
 
             uint tmpValue = 10 + cmem[9];
 
-            while (ESI != tmpValue)
+            for (int i = 0; i< cmem.Length; i++)
             {
                 OpCode = DecodeOpCode(cmem[PC]);
                 ShowInfo();
@@ -94,16 +97,16 @@ namespace Lab_PAOIiAS_1_new
             uint[] b = new uint[] { 5, 2, 3, 5 };
             uint arrLenght = (uint) a.Length;
             cmem = new uint[9 + 1 + 2*arrLenght];
-            cmem[9] = arrLenght; 
+            cmem[100] = arrLenght; 
             for (int i = 0; i < arrLenght*2; i++)
             {
                 if(i > arrLenght-1)
                 {
-                    cmem[10 + i] = b[i-arrLenght];
+                    cmem[101 + i] = b[i-arrLenght];
                 }
                 else
                 {
-                    cmem[10 + i] = a[i];
+                    cmem[101 + i] = a[i];
                 }
 
             }
@@ -180,6 +183,30 @@ namespace Lab_PAOIiAS_1_new
             Console.WriteLine("       OpCode: 0x{0:X}", OpCode);
             
         }
-       
+        static int DefineReg2StrToInt(string op)
+        {
+            switch (op)
+            {
+                case "EAX": return 1;
+                case "EBX": return 2;
+                case "ECX": return 3;
+                case "EDX": return 4;
+                default: return 0;
+            }
+        }
+        static int DefineReg2Mov(string op)
+        {
+            char[] smbsToTrim = new char[] { '[', ']' };
+            op = op.Trim(smbsToTrim);
+            switch (op)
+            {
+                case "EAX": return 1;
+                case "EBX": return 2;
+                case "ECX": return 3;
+                case "EDX": return 4;
+                default: return 0;
+            }
+        }
+
     }
 }
