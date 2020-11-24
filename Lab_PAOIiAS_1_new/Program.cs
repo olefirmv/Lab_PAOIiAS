@@ -13,7 +13,8 @@ namespace Lab_PAOIiAS_1_new
         static uint resultCMD;
         static string tmpCmem;
         static uint tmpValue;
-        
+        static int arrLenght;
+
         static uint operand1;
         static uint operand2;
         static uint movRCRResult;
@@ -94,7 +95,7 @@ namespace Lab_PAOIiAS_1_new
             //for lab2
             //tmpValue = 13;
             //for lab3
-            tmpValue =(uint) arrCMDS.Length;
+            tmpValue =(uint) arrLenght;
 
             for (PC = 0; PC < tmpValue; PC++)
             {
@@ -233,7 +234,7 @@ namespace Lab_PAOIiAS_1_new
             Console.WriteLine("Enter length of arr:");
             string arrLenghtStr = Console.ReadLine();
             
-            int arrLenght = int.Parse(arrLenghtStr) * qArr;
+            arrLenght = int.Parse(arrLenghtStr) * qArr;
             cmem[100] = uint.Parse(arrLenghtStr);
             for (int i = 0; i < arrLenght; i++)
             {
