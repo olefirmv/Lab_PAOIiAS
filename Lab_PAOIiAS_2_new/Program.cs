@@ -14,7 +14,7 @@ namespace Lab_PAOIiAS_1_new
 
         static void Main(string[] args)
         {
-            foreach(uint i in cmem)
+            foreach (uint i in cmem)
             {
                 cmem[i] = 0;
             }
@@ -33,7 +33,7 @@ namespace Lab_PAOIiAS_1_new
 
             uint tmpValue = 10 + cmem[9];
 
-            for (int i = 0; i< cmem.Length; i++)
+            for (int i = 0; i < cmem.Length; i++)
             {
                 OpCode = DecodeOpCode(cmem[PC]);
                 ShowInfo();
@@ -50,10 +50,10 @@ namespace Lab_PAOIiAS_1_new
                         break;
                     case 0x11:
                         // mov
-                        if(((cmem[PC]>>20) &15) ==1)
+                        if (((cmem[PC] >> 20) & 15) == 1)
                             Mov(ref EAX, cmem[ESI]);
                         else
-                            Mov(ref EBX, cmem[ESI+cmem[9]]);
+                            Mov(ref EBX, cmem[ESI + cmem[9]]);
                         break;
                     case 0x40:
                         //mul
@@ -82,8 +82,8 @@ namespace Lab_PAOIiAS_1_new
                 Console.WriteLine("       CF:{0}", CF);
                 PC++;
             }
-            
-            
+
+
             OpCode = DecodeOpCode(cmem[PC]);
             ShowInfo();
             Console.WriteLine("Loop L1");
@@ -92,21 +92,21 @@ namespace Lab_PAOIiAS_1_new
 
         static uint[] ArrInit()
         {
-            
+
             uint[] a = new uint[] { 5, 0xFFFF0000, 3, 0xFFFF0000 };
             uint[] b = new uint[] { 5, 2, 3, 5 };
-            uint arrLenght = (uint) a.Length;
-            cmem = new uint[9 + 1 + 2*arrLenght];
-            cmem[100] = arrLenght; 
-            for (int i = 0; i < arrLenght*2; i++)
+            uint arrLenght = (uint)a.Length;
+            cmem = new uint[9 + 1 + 2 * arrLenght];
+            cmem[9] = arrLenght;
+            for (int i = 0; i < arrLenght * 2; i++)
             {
-                if(i > arrLenght-1)
+                if (i > arrLenght - 1)
                 {
-                    cmem[101 + i] = b[i-arrLenght];
+                    cmem[10 + i] = b[i - arrLenght];
                 }
                 else
                 {
-                    cmem[101 + i] = a[i];
+                    cmem[10 + i] = a[i];
                 }
 
             }
@@ -115,10 +115,10 @@ namespace Lab_PAOIiAS_1_new
 
         static void Mul(uint reg1, uint reg2)
         {
-            long mulValue = (long) reg1 * reg2;
+            long mulValue = (long)reg1 * reg2;
             if (mulValue > 0xFFFFFFFF)
             {
-                uint tmp = (uint) (mulValue >> 32) & 0xFFFFFFFF;
+                uint tmp = (uint)(mulValue >> 32) & 0xFFFFFFFF;
                 EDX = (uint)(mulValue & 0xFFFFFFFF);
                 ECX = tmp;
             }
@@ -126,12 +126,12 @@ namespace Lab_PAOIiAS_1_new
             {
                 ECX = 0;
                 EDX = reg1 * reg2;
-                
+
             }
         }
         static void Add(ref uint reg1, uint reg2)
         {
-            long sumVal = (long) reg1 + reg2;
+            long sumVal = (long)reg1 + reg2;
             if (sumVal > 0xFFFFFFFF)
             {
                 CF = 1;
@@ -150,7 +150,7 @@ namespace Lab_PAOIiAS_1_new
 
         static void Inc(ref uint reg)
         {
-            reg= reg+1;
+            reg = reg + 1;
         }
 
         static void Mov(ref uint reg, uint value)
@@ -181,7 +181,7 @@ namespace Lab_PAOIiAS_1_new
         {
             Console.WriteLine("PC:{0}", PC);
             Console.WriteLine("       OpCode: 0x{0:X}", OpCode);
-            
+
         }
         static int DefineReg2StrToInt(string op)
         {

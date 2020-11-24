@@ -5,22 +5,25 @@ namespace Lab_PAOIiAS_3_new
 {
     class Program
     {
-        static int EAX = 0 /*001*/, EBX = 0/*002*/, ECX = 0/*003*/, EDX = 0/*004*/;
-        static int PC = 0;
-        static int OpCode;
-        static int resultCMD;
+        
+        static uint EAX = 0 /*001*/, EBX = 0/*002*/, ECX = 0/*003*/, EDX = 0/*004*/;
+        static uint EBP = 0/*005*/, ESP = 0/*006*/, ESI = 0/*007*/;
+        static uint PC = 0;
+        static uint OpCode;
+        static uint resultCMD;
         static string tmpCmem;
-        static int tmpValue;
-        static int regNumber1;
-        static int regNumber2;
-        static int movResult;
-        static int incResult;
-        static int loadResult;
-        static int index;
+        static uint tmpValue;
+        static uint regNumber1;
+        static uint regNumber2;
+        static uint movRCRResult;
+        static uint incResult;
+        static uint movRVResult;
+        static uint index;
+        static uint ZF = 0;
 
-        static int[] cmem;
-        static int[] arrNumbers;
-        static int[] arrCMDS;
+        static uint[] cmem = new uint[200];
+        static uint[] arrNumbers;
+        static uint[] arrCMDS;
 
         static void Main(string[] args)
         {
@@ -39,10 +42,10 @@ namespace Lab_PAOIiAS_3_new
             ArrInitNumbers();
             ArrInitCmds();
 
-            arrCMDS = tmpCmem.Substring(0,tmpCmem.Length-1).Split(',').Select(value => int.Parse(value)).ToArray();
+            arrCMDS = tmpCmem.Substring(0,tmpCmem.Length-1).Split(',').Select(value => uint.Parse(value)).ToArray();
 
-            cmem = new int[arrCMDS.Length + 1 + arrNumbers.Length];
-            cmem[arrCMDS.Length] = arrNumbers.Length;
+            
+            cmem[100] = (uint) arrNumbers.Length;
             for(int i = 0; i < arrCMDS.Length;i ++)
             {
                 cmem[i] = arrCMDS[i];
@@ -50,93 +53,98 @@ namespace Lab_PAOIiAS_3_new
             }
             for (int i = 0; i < arrNumbers.Length; i++)
             {
-                cmem[i + arrCMDS.Length +1] = arrNumbers[i];
+                cmem[i +101] = arrNumbers[i];
             }
-            
-            bool tmpFlag = true;
-            
-            for(int i = 0; i < cmem.Length; i++ )
+                  
+            for (PC = 0; PC < 8; PC++)
             {
-                if(((cmem[i] >> 24) & 255) == 0x30 || ((cmem[i] >> 24) & 255) == 0x31)
-                {
-                    tmpFlag = false;
-                }
-                Console.WriteLine(": 0x{0:X8}",cmem[i]);
-            }
-
-            if (tmpFlag == false)
-                tmpValue = cmem.Length;
-            else tmpValue = arrCMDS.Length;
-
-
-            while (ECX != tmpValue)
-            {
-                if (tmpFlag == true && PC < arrCMDS.Length)
-                {
-                    OpCode = DecodeOpCode(cmem[PC]);
-                    ShowInfo();
-                }
-                else if (tmpFlag == false)
-                {
-                    OpCode = DecodeOpCode(cmem[PC]);
-                    ShowInfo();
-                }
-                else break;
-
+                
                 switch (OpCode)
                 {
                     case 0x10:
-                        // load
-                        regNumber1 = DefineReg1(cmem[PC]);
-                        int value = DefineReg2(cmem[PC]);
-                        loadResult = Load(GetRegisterValue(regNumber1), value);
-                        setResultToReg1(regNumber1, loadResult);
-                        break;
-                    case 0x30:
-                        //L1
-                        Console.WriteLine("L1");
-                        index = PC - 1;
+                        // MovRV
+                        regNumber1 = DefineOp1(cmem[PC]);
+                        uint value = DefineOp2(cmem[PC]);
+                        movRVResult = MovRV(GetRegisterValue(regNumber1), value);
+                        setResultToReg1(regNumber1, movRVResult);
                         break;
                     case 0x11:
-                        // mov
-                        regNumber1 = DefineReg1(cmem[PC]);
-                        regNumber2 = DefineReg2(cmem[PC]);
-                        movResult = Mov(GetRegisterValue(regNumber1), cmem[GetRegisterValue(regNumber2)]);
-                        setResultToReg1(regNumber1, movResult);
+                        // MovRCe
+                        regNumber1 = DefineOp1(cmem[PC]);
+                        regNumber2 = DefineOp2(cmem[PC]);
+                        movRCRResult = MovRCR(GetRegisterValue(regNumber1), cmem[GetRegisterValue(regNumber2)]);
+                        setResultToReg1(regNumber1, movRCRResult);
                         break;
                     case 0x20:
-                        //add two registers
-                        regNumber1 = DefineReg1(cmem[PC]);
-                        regNumber2 = DefineReg2(cmem[PC]);
-                        int sumResult = Add(GetRegisterValue(regNumber1), GetRegisterValue(regNumber2));
+                        //addRR
+                        regNumber1 = DefineOp1(cmem[PC]);
+                        regNumber2 = DefineOp2(cmem[PC]);
+                        uint sumResult = AddRR(GetRegisterValue(regNumber1), GetRegisterValue(regNumber2));
                         setResultToReg1(regNumber1, sumResult);
                         break;
-                    case 0x21:
+                    case 0x23:
+                        //addRC
+                        regNumber1 = DefineOp1(cmem[PC]);
+                        uint value2 = DefineOp2(cmem[PC]);
+                        sumResult = AddRC(GetRegisterValue(regNumber1), value2);
+                        setResultToReg1(regNumber1, sumResult);
+                        break;
+                    case 0x22:
                         // Inc
-                        regNumber1 = DefineReg1(cmem[PC]);
+                        regNumber1 = DefineOp1(cmem[PC]);
                         incResult = Inc(GetRegisterValue(regNumber1));
                         setResultToReg1(regNumber1, incResult);
                         break;
                     case 0x31:
-                        Console.WriteLine("Loop L1");
-                        //loop
-                        PC = index;
+                        //cmp 
+                        regNumber1 = DefineOp1(cmem[PC]);
+                        regNumber2 = DefineOp2(cmem[PC]);
+                        int resultCMP = (int)(GetRegisterValue(regNumber1) - GetRegisterValue(regNumber2));
+                        if (resultCMP == 0)
+                            ZF = 1;
+                        else ZF = 0;
                         break;
+                    case 0x32:
+                        //jne
+                        if (ZF == 0)
+                        {
+                            PC = 2;
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
                 }
                 ShowRegisterValues();
-                PC++;
+                
             }
 
-            if (tmpFlag == false)
+        }
+        static uint GetRegisterValue(uint regNum)
+        {
+            uint registerValue = 0;
+
+            switch (regNum)
             {
-                OpCode = DecodeOpCode(cmem[PC]);
-                ShowInfo();
-                Console.WriteLine("Loop L1");
-                ShowRegisterValues();
+                case 1:
+                    registerValue = EAX;
+                    break;
+                case 2:
+                    registerValue = EBX;
+                    break;
+                case 3:
+                    registerValue = ECX;
+                    break;
+                case 4:
+                    registerValue = EDX;
+                    break;
             }
+
+            return registerValue;
         }
 
-        static void setResultToReg1(int op1, int opResult )
+        static void setResultToReg1(uint op1, uint opResult )
         {
             if (op1 == 1)
                 EAX = opResult;
@@ -166,29 +174,36 @@ namespace Lab_PAOIiAS_3_new
                     string sCmdType = "";
                     string sOp1 = "";
                     string sOp2 = "";
-                    int cmdType = 0;
-                    int op1 = 0;
-                    int op2 = 0;
-                    if (arrayCmd[0] == "Load")
+                    uint cmdType = 0;
+                    uint op1 = 0;
+                    uint op2 = 0;
+                    if (arrayCmd[0] == "MovRV")
                     {
                         sCmdType = "0x10";
                         cmdType = 268435456;// 2^28
                         op1 = DefineReg1StrToInt(arrayCmd[1]);
-                        op2 = int.Parse(arrayCmd[2]);
+                        op2 = uint.Parse(arrayCmd[2]);
                     }
-                    if (arrayCmd[0] == "L1")
+                    if (arrayCmd[0] == "MovRCR")
                     {
-                        sCmdType = "0x30";
-                        cmdType = 536870912 + 268435456;// 2^29+ 2^28
-                        op1 = 0;
-                        op2 = 0;
+                        sCmdType = "0x11";
+                        cmdType = 268435456;// 2^28
+                        op1 = DefineReg1StrToInt(arrayCmd[1]);
+                        op2 = uint.Parse(arrayCmd[2]);
                     }
-                    if (arrayCmd[0] == "Loop")
+                    if (arrayCmd[0] == "Cmp")
                     {
                         sCmdType = "0x31";
                         cmdType = 536870912 + 268435456 + 16777216;// 2^29 + 2^28 + 2^24
                         op1 = 0;
                         op2 = 0;
+                    }
+                    if (arrayCmd[0] == "Jne")
+                    {
+                        sCmdType = "0x32";
+                        cmdType = 268435456;// 2^28
+                        op1 = DefineReg1StrToInt(arrayCmd[1]);
+                        op2 = uint.Parse(arrayCmd[2]);
                     }
                     if (arrayCmd[0] == "Mov")
                     {
@@ -197,7 +212,7 @@ namespace Lab_PAOIiAS_3_new
                         op1 = DefineReg1StrToInt(arrayCmd[1]);
                         op2 = DefineReg2Mov(arrayCmd[2]);
                     }
-                    if (arrayCmd[0] == "Add")
+                    if (arrayCmd[0] == "AddRR")
                     {
                         sCmdType = "0x20";
                         cmdType = 536870912;// 2^29
@@ -206,20 +221,41 @@ namespace Lab_PAOIiAS_3_new
                     }
                     if(arrayCmd[0] == "Inc")
                     {
-                        sCmdType = "0x21";
+                        sCmdType = "0x22";
                         cmdType = 536870912 + 16777216;// 2^29+ 2^24
                         op1 = DefineReg1StrToInt(arrayCmd[1]);
                         op2 = 1;
                     }
-                    
+                    if (arrayCmd[0] == "AddRR")
+                    {
+                        sCmdType = "0x23";
+                        cmdType = 536870912;// 2^29
+                        op1 = DefineReg1StrToInt(arrayCmd[1]);
+                        op2 = DefineReg2StrToInt(arrayCmd[2]);
+                    }
+
                     resultCMD = cmdType + op1 + op2;
                     tmpCmem += resultCMD + ",";
                     
                 }
             }
         }
+
+        // define number of reg1
+        static uint DefineOp1(uint commandNumber)
+        {
+            return (commandNumber >> 12) & 4095;
+
+        }
+        // define number of reg2
+        static uint DefineOp2(uint commandNumber)
+        {
+
+            return commandNumber & 4095;
+
+        }
        
-        static int DefineReg2StrToInt(string op)
+        static uint DefineReg2StrToInt(string op)
         {
             switch (op)
             {
@@ -230,7 +266,7 @@ namespace Lab_PAOIiAS_3_new
                 default: return 0;
             }
         }
-        static int DefineReg2Mov(string op)
+        static uint DefineReg2Mov(string op)
         {
             char[] smbsToTrim = new char[] {'[', ']' };
             op = op.Trim(smbsToTrim);
@@ -245,20 +281,18 @@ namespace Lab_PAOIiAS_3_new
         }
         static void ArrInitNumbers()
         {
-
-            Console.WriteLine("Enter length of arr:");
-            string arrLenghtStr = Console.ReadLine();
-            int arrLenght = int.Parse(arrLenghtStr);
-            arrNumbers = new int[arrLenght];
-            
-            for (int i = 0; i < arrLenght; i++)
-            {
-                Console.WriteLine("Enter {0} value:", i + 1);
-                arrNumbers[i] = int.Parse(Console.ReadLine());
-            }
-            
+                Console.WriteLine("Enter length of arr:");
+                string arrLenghtStr = Console.ReadLine();
+                int arrLenght = int.Parse(arrLenghtStr);
+                cmem[100] = (uint)arrLenght;
+                for (int i = 101; i < 101 + arrLenght; i++)
+                {
+                    Console.WriteLine("Enter {0} value:", i);
+                    cmem[i] = uint.Parse(Console.ReadLine());
+                }
+                
         }
-        static int DefineReg1StrToInt (string op)
+        static uint DefineReg1StrToInt (string op)
         {
             switch(op)
             {
@@ -269,76 +303,44 @@ namespace Lab_PAOIiAS_3_new
                 default: return 0;
             }
         }
-
-        // define number of reg1
-        static int DefineReg1(int commandNumber)
+        static uint AddRR(uint reg1, uint op2)
         {
-            return (commandNumber >> 12) & 4095;
-
+            return reg1 += op2;
         }
-        // define number of reg2
-        static int DefineReg2(int commandNumber)
+        static uint AddRC(uint reg1, uint op2)
         {
-
-            return commandNumber & 4095;
+            return reg1 += cmem[op2];
 
         }
 
-        static int GetRegisterValue(int regNum)
+        static uint Inc(uint reg)
         {
-            int registerValue = 0;
-
-            switch (regNum)
-            {
-                case 1:
-                    registerValue = EAX;
-                    break;
-                case 2:
-                    registerValue = EBX;
-                    break;
-                case 3:
-                    registerValue = ECX;
-                    break;
-                case 4:
-                    registerValue = EDX;
-                    break;
-            }
-
-            return registerValue;
+            return ++reg;
         }
 
-        static int Add( int reg1, int reg2)
-        {
-            return reg1 += reg2;
-        }
-
-        static int Inc(int reg)
-        {
-            return reg = reg + 1;
-        }
-
-        static int Mov(int reg, int value)
+        static uint MovRCR(uint reg, uint value)
         {
             return reg = value;
         }
 
-        static int Load(int reg, int value)
+        static uint MovRV(uint reg, uint value)
         {
             return reg = value;
         }
-
-        static int DecodeOpCode(int cmd)
+        static uint DecodeOpCode(uint cmd)
         {
             return cmd >> 24;
         }
+        
         static void ShowRegisterValues()
         {
             Console.WriteLine("       register EAX: 0x{0:X8}", EAX);
             Console.WriteLine("       register EBX: 0x{0:X8}", EBX);
             Console.WriteLine("       register ECX: 0x{0:X8}", ECX);
             Console.WriteLine("       register EDX: 0x{0:X8}", EDX);
+            Console.WriteLine("       flag: {0}", ZF);
         }
-        static void ShowInfo()
+        static void ShowPC()
         {
             Console.WriteLine("PC:{0}", PC);
             Console.WriteLine("       OpCode: 0x{0:X}", OpCode);
