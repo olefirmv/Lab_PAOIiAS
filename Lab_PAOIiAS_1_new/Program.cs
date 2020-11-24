@@ -57,7 +57,7 @@ namespace Lab_PAOIiAS_1_new
             {
                 Console.WriteLine("       0x{0:X8}", cmem[i]);
             }
-            for (int i = 100; i < 101 + cmem[100]; i++)
+            for (int i = 100; i < 101 + cmem[100]*2; i++)
             {
                 Console.WriteLine("       0x{0:X8}", cmem[i]);
             }
