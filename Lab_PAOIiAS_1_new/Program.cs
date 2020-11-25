@@ -46,7 +46,7 @@ namespace Lab_PAOIiAS_1_new
             arrCMDS = tmpCmem.Substring(0, tmpCmem.Length - 1).Split(',').Select(value => uint.Parse(value)).ToArray();
 
 
-            
+
             for (int i = 0; i < arrCMDS.Length; i++)
             {
                 cmem[i] = arrCMDS[i];
@@ -58,7 +58,7 @@ namespace Lab_PAOIiAS_1_new
             {
                 Console.WriteLine("       0x{0:X8}", cmem[i]);
             }
-            for (int i = 100; i < 101 + cmem[100]*2; i++)
+            for (int i = 100; i < 101 + cmem[100] * 2; i++)
             {
                 Console.WriteLine("       0x{0:X8}", cmem[i]);
             }
@@ -68,7 +68,7 @@ namespace Lab_PAOIiAS_1_new
             //cmem[1] = 0x23002064; // AddRC EBX [100] 
             //cmem[2] = 0x10003065; // MovRV Ecx 101
 
-            //cmem[3] = 0x11001003; // movRCR EAX cmem[ECX]
+            //cmem[3] = 0x11001003; // MovRCR EAX cmem[ECX]
             //cmem[4] = 0x20004001; // AddRR EDX EAX  
             //cmem[5] = 0x31003002; // CMP ECX EBX   
             //cmem[6] = 0x22003000; // Inc ECX 
@@ -76,26 +76,26 @@ namespace Lab_PAOIiAS_1_new
 
             //cmds for lab2
             //cmem[0] = 0x10005064; //MovRV Ebp 100
-            //cmem[1] = 0x23005064; //AddRC EBP [100] \1
-            //cmem[2] = 0x10003065;//MovRV Ecx 101   \2
+            //cmem[1] = 0x23005064; //AddRC EBP [100] 
+            //cmem[2] = 0x10003065;//MovRV Ecx 101   
 
-            //cmem[3] = 0x11001003;//movRCR EAX[ECX]\3
-            //cmem[4] = 0x23003064;//AddRC ECX [100] \4
-            //cmem[5] = 0x11002003;//movRCR EBX [ECX]\5
-            //cmem[6] = 0x40002001;//Mul ebx eax        \6 - мл биты в eax, ст.биты в edx
-            //cmem[7] = 0x240C8001;//AddCVR [200] EAX\7
-            //cmem[8] = 0x210C9004;//Adc[201] EDX   \8
-            //cmem[9] = 0x50003064;//Sub ECX, [100]  \9
-            //cmem[10] = 0x31003005;//Cmp ECX, EBP    \10
-            //cmem[11] = 0x22003000;//Inc ECX         \11
-            //cmem[12] = 0x32003000;//Jne 3           \12
+            //cmem[3] = 0x11001003;//movRCR EAX[ECX]
+            //cmem[4] = 0x23003064;//AddRC ECX [100] 
+            //cmem[5] = 0x11002003;//movRCR EBX [ECX]
+            //cmem[6] = 0x40002001;//Mul ebx eax - мл биты в eax, ст.биты в edx
+            //cmem[7] = 0x240C8001;//AddCVR [200] EAX
+            //cmem[8] = 0x210C9004;//Adc[201] EDX  
+            //cmem[9] = 0x50003064;//Sub ECX, [100] 
+            //cmem[10] = 0x31003005;//Cmp ECX, EBP    
+            //cmem[11] = 0x22003000;//Inc ECX         
+            //cmem[12] = 0x32003000;//Jne 3           
 
             //for lab1
             //tmpValue = 8;
             //for lab2
             //tmpValue = 13;
             //for lab3
-            tmpValue =(uint) arrLenght;
+            tmpValue = (uint) arrCMDS.Length;
 
             for (PC = 0; PC < tmpValue; PC++)
             {
@@ -225,7 +225,7 @@ namespace Lab_PAOIiAS_1_new
             return cmem;
         }
         //for lab3
-        
+
         #region Lab3
         static void ArrInitNumbers()
         {
@@ -233,7 +233,7 @@ namespace Lab_PAOIiAS_1_new
             int qArr = int.Parse(Console.ReadLine());
             Console.WriteLine("Enter length of arr:");
             string arrLenghtStr = Console.ReadLine();
-            
+
             arrLenght = int.Parse(arrLenghtStr) * qArr;
             cmem[100] = uint.Parse(arrLenghtStr);
             for (int i = 0; i < arrLenght; i++)
@@ -267,7 +267,7 @@ namespace Lab_PAOIiAS_1_new
                     if (arrayCmd[0] == "MovRV")
                     {
                         sCmdType = "0x10";
-                        cmdType = cmdTypeToInt (28,0,0);// 2^28
+                        cmdType = cmdTypeToInt(28, 0, 0);// 2^28
                         op1 = DefineOp1StrToInt(arrayCmd[1]);
                         op2 = uint.Parse(arrayCmd[2]);
                     }
@@ -357,7 +357,7 @@ namespace Lab_PAOIiAS_1_new
                 case "EBX": return 8192; //2^13
                 case "ECX": return 8192 + 4096; //2^13 +2^12
                 case "EDX": return 16384; //2^14
-                case "EBP": return cmdTypeToInt(14,12,0);
+                case "EBP": return cmdTypeToInt(14, 12, 0);
                 default: return CalculateOp1(int.Parse(op));
             }
         }
@@ -375,8 +375,8 @@ namespace Lab_PAOIiAS_1_new
                 default: return uint.Parse(op);
             }
         }
-        
-        static uint cmdTypeToInt (int n1, int n2, int n3)
+
+        static uint cmdTypeToInt(int n1, int n2, int n3)
         {
             if (n2 == 0 && n3 == 0)
             {
@@ -387,7 +387,7 @@ namespace Lab_PAOIiAS_1_new
                 return Convert.ToUInt32(Math.Pow(2, n1) + Math.Pow(2, n2));
             }
             else return Convert.ToUInt32(Math.Pow(2, n1) + Math.Pow(2, n2) + Math.Pow(2, n3));
-            
+
         }
 
         static uint CalculateOp1(int value)
@@ -400,7 +400,7 @@ namespace Lab_PAOIiAS_1_new
                 result += res;
                 value = value >> 1;
             }
-            return Convert.ToUInt32(result); 
+            return Convert.ToUInt32(result);
         }
         #endregion 
 
